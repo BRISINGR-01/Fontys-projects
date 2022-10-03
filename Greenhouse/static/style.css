@@ -39,7 +39,7 @@ body {
 .termometer {
   margin: 0 10px;
   align-self: center;
-  height: 10em;
+  height: 18em;
   min-width: 30px;
 }
 
@@ -48,6 +48,10 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+
+.latest-temp {
+  height: 12em;
 }
 
 #latest {
@@ -80,45 +84,6 @@ body {
   color: #323232;
 }
 
-@media (min-width: 480px) {
-  #container {
-    flex-direction: row;
-  }
-
-  #prev-cards {
-    width: 50vw;
-    height: 100vh;
-  }
-
-  .termometer {
-    height: 12em;
-  }
-
-  .prev-termometer {
-    height: 8em;
-  }
-}
-
-@media (max-width: 480px) {
-  #container {
-    flex-direction: column-reverse;
-  }
-
-  #prev-cards {
-    width: 100vw;
-    height: 50vh;
-    flex-direction: row;
-  }
-
-  .termometer {
-    height: 12em;
-  }
-
-  .prev-termometer {
-    height: 8em;
-  }
-
-}
 
 
 

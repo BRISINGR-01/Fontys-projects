@@ -15,6 +15,7 @@
     <a href="/" id="back">&laquo; Go back</a>
     <div class="tab-container">
       Sensor:
+      <button class="sensor-tab" id="sensor-Arduino">Arduino</button>
       <button class="sensor-tab sensor-selected" id="sensor-q3bPOMgDza">
         q3b
       </button>
@@ -30,11 +31,11 @@
     </div>
     <div class="tab-container">
       Week:
-      <button class="week-tab week-selected" id="week-1">1</button>
-      <button class="week-tab" id="week-2">2</button>
-      <button class="week-tab" id="week-3">3</button>
-      <button class="week-tab" id="week-4">4</button>
-      <button class="week-tab" id="week-41">41</button>
+      <button class="week-tab arduino" id="week-0">0</button>
+      <button class="week-tab non-arduino week-selected" id="week-1">1</button>
+      <button class="week-tab non-arduino" id="week-2">2</button>
+      <button class="week-tab non-arduino" id="week-3">3</button>
+      <button class="week-tab non-arduino" id="week-4">4</button>
     </div>
     <div class="tab-container">
       Day:
@@ -128,12 +129,17 @@
     </div>
   </body>
   <script>
-    const SENSOR_IDS = ["q3bPOMgDza", "Anw2bNFVHb", "rtPGM4n80v", "fFPR9fxgIf", "seZDwgOPZH", "d1ftuVwNyY", "sjLDuO4Lx4", "mFEYsuCfXe", "HyrOWwWXn5", "UeAEMUlYOu"]
+    const SENSOR_IDS = ["Arduino", "q3bPOMgDza", "Anw2bNFVHb", "rtPGM4n80v", "fFPR9fxgIf", "seZDwgOPZH", "d1ftuVwNyY", "sjLDuO4Lx4", "mFEYsuCfXe", "HyrOWwWXn5", "UeAEMUlYOu"]
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     let data, chart, 
       sensor = SENSOR_IDS.includes(localStorage.sensor) ? localStorage.sensor : SENSOR_IDS[0],
-      week = [1, 2, 3, 4, 41].includes(+localStorage.week) ? +localStorage.week : 1,
+      week = [0, 1, 2, 3, 4].includes(+localStorage.week) ? +localStorage.week : 1,
       day = days.includes(localStorage.day) ? localStorage.day : "Monday";
+
+    [...document.getElementsByClassName("arduino")].forEach(curr_week => curr_week.style.display = sensor == SENSOR_IDS[0] ? "block" : "none");
+    [...document.getElementsByClassName("non-arduino")].forEach(curr_week => curr_week.style.display = sensor != SENSOR_IDS[0] ? "block" : "none");
+    week = sensor == SENSOR_IDS[0] ? 0 : week == 0 ? 1 : week;
+    
 
     const id = id => document.getElementById(id);
     function select(type, id) {
@@ -153,6 +159,17 @@
           switch (value) {
             case "sensor":
               sensor = e.target.id.replace("sensor-", "");
+              [...document.getElementsByClassName("arduino")].forEach(week => week.style.display = sensor == SENSOR_IDS[0] ? "block" : "none");
+              [...document.getElementsByClassName("non-arduino")].forEach(week => week.style.display = sensor != SENSOR_IDS[0] ? "block" : "none");
+              if (sensor == SENSOR_IDS[0]) {
+                select("week", "week-0");
+                week = 0
+                let unAvailableDays = Object.entries(data[sensor][week]).filter(([day, val]) => val.length == 0).map(entry => entry[0]);
+                unAvailableDays.forEach(day => id("day-" + (days.indexOf(day) + 1)).style.display = "none");
+              } else if (localStorage.sensor == SENSOR_IDS[0]) {
+                select("week", "week-1");
+                days.forEach((day, i) => id("day-" + (i + 1)).style.display = "block");
+              }
               break;
             case "week":
               week = Number(e.target.innerText);
@@ -173,13 +190,16 @@
     document.addEventListener("DOMContentLoaded", () => {
       data = {{ data|safe }};
 
-      Object.keys(data).forEach(sensorId => sensorId);
+      if (sensor == SENSOR_IDS[0]) {
+        let unAvailableDays = Object.entries(data[sensor][week]).filter(([day, val]) => val.length == 0).map(entry => entry[0]);
+          unAvailableDays.forEach(day => id("day-" + (days.indexOf(day) + 1)).style.display = "none");
+      }
 
-      refreshData();
+      Object.keys(data).forEach(sensorId => sensorId);
 
       Chart.defaults.global.defaultFontColor = "#ffc800";
 
-      if (!data[sensor] || !data[sensor][week] || !data[sensor][week][day]) {
+      if (!data[sensor] || !data[sensor][week]) {
         chart = new Chart("graph", {
         type: "line",
         data: {
@@ -204,7 +224,12 @@
         },
       })
         return;
+      } else if (data[sensor][week][day].length == 0) {
+        day = Object.entries(data[sensor][week]).find(([day, val]) => val.length > 0)[0];
+        select("day", "day-" + (days.indexOf(day) + 1))
       }
+
+      refreshData();
 
       const temperatureValues = data[sensor][week][day].map(val => val[4]);
       const humidityValues = data[sensor][week][day].map(val => val[5]);
@@ -242,14 +267,14 @@
         historyTable.querySelectorAll("*").forEach(child => child.remove())
       const statisticsTable = id("statistics");
 
-      if (!data[sensor] || !data[sensor][week] || !data[sensor][week][day]) {
+      if (!data[sensor] || !data[sensor][week] || !data[sensor][week][day] || data[sensor][week][day].length == 0) {
         statisticsTable.querySelectorAll(".statistics-cell").forEach(child => child.innerText = "")
-
+        
+        chart.data.labels = []
+        chart.data.datasets.forEach((dataset, i) => {
+          dataset.data = [];
+        });
         if (chart) {
-          chart.data.labels = []
-          chart.data.datasets.forEach((dataset, i) => {
-            dataset.data = [];
-          });
           chart.update();
         }
 
@@ -337,15 +362,22 @@
       id("min-humidity-sensor").innerText = sensor_hum_val.map(Number).reduce((a, n) => Math.min(a, n))
       id("min-brightness-sensor").innerText = sensor_lux_val.map(Number).reduce((a, n) => Math.min(a, n))
       
-      if (!chart) return;
+      if (chart) {
+        brightnessValues = brightnessValues.map(lux => lux / 10)
 
-      brightnessValues = brightnessValues.map(lux => lux / 10)
-
-      chart.data.labels = hours
-      chart.data.datasets.forEach((dataset, i) => {
-        dataset.data = [temperatureValues, humidityValues, brightnessValues][i];
-      });
-      chart.update();
+        if (hours.length > chart.data.labels.length) {// prevent ugly transition
+          // chart.data.labels = hours
+          chart.data.datasets.forEach((dataset, i) => {
+            dataset.data = temperatureValues.map(el => 110);
+          });
+          chart.update();
+        }
+        chart.data.labels = hours
+        chart.data.datasets.forEach((dataset, i) => {
+          dataset.data = [temperatureValues, humidityValues, brightnessValues][i];
+        });
+        chart.update();
+      }
     }
   </script>
 </html>
