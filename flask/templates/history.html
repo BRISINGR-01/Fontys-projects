@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='style.css') }}"
+    />
+    <title>Greenhouse</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  </head>
+  <body>
+    <a href="/" id="back">&laquo; Go back</a>
+    <div class="tab-container">
+      Sensor:
+      <button class="sensor-tab sensor-selected" id="sensor-q3bPOMgDza">
+        q3b
+      </button>
+      <button class="sensor-tab" id="sensor-Anw2bNFVHb">Anw</button>
+      <button class="sensor-tab" id="sensor-rtPGM4n80v">rtP</button>
+      <button class="sensor-tab" id="sensor-fFPR9fxgIf">fFP</button>
+      <button class="sensor-tab" id="sensor-seZDwgOPZH">seZ</button>
+      <button class="sensor-tab" id="sensor-d1ftuVwNyY">d1f</button>
+      <button class="sensor-tab" id="sensor-sjLDuO4Lx4">sjL</button>
+      <button class="sensor-tab" id="sensor-mFEYsuCfXe">mFE</button>
+      <button class="sensor-tab" id="sensor-HyrOWwWXn5">Hyr</button>
+      <button class="sensor-tab" id="sensor-UeAEMUlYOu">UeA</button>
+    </div>
+    <div class="tab-container">
+      Week:
+      <button class="week-tab week-selected" id="week-1">1</button>
+      <button class="week-tab" id="week-2">2</button>
+      <button class="week-tab" id="week-3">3</button>
+      <button class="week-tab" id="week-4">4</button>
+      <button class="week-tab" id="week-41">41</button>
+    </div>
+    <div class="tab-container">
+      Day:
+      <button class="day-tab day-selected" id="day-1">Monday</button>
+      <button class="day-tab" id="day-2">Tuesday</button>
+      <button class="day-tab" id="day-3">Wednesday</button>
+      <button class="day-tab" id="day-4">Thursday</button>
+      <button class="day-tab" id="day-5">Friday</button>
+      <button class="day-tab" id="day-6">Saturday</button>
+      <button class="day-tab" id="day-7">Sunday</button>
+    </div>
+    <canvas id="graph"></canvas>
+    <div style="display: flex; flex-wrap: wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Hour</th>
+            <th>Temperature °C</th>
+            <th>Humidity %</th>
+            <th>brightness W/m²</th>
+          </tr>
+        </thead>
+        <tbody id="history"></tbody>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th>Statistic</th>
+            <th>Temperature °C</th>
+            <th>Humidity %</th>
+            <th>brightness W/m²</th>
+          </tr>
+        </thead>
+        <tbody id="statistics">
+          <tr>
+            <td>Average - sensor</td>
+            <td class="statistics-cell" id="average-temperature-sensor"></td>
+            <td class="statistics-cell" id="average-humidity-sensor"></td>
+            <td class="statistics-cell" id="average-brightness-sensor"></td>
+          </tr>
+          <tr>
+            <td>Maximum - sensor</td>
+            <td class="statistics-cell" id="max-temperature-sensor"></td>
+            <td class="statistics-cell" id="max-humidity-sensor"></td>
+            <td class="statistics-cell" id="max-brightness-sensor"></td>
+          </tr>
+          <tr>
+            <td>Minimum - sensor</td>
+            <td class="statistics-cell" id="min-temperature-sensor"></td>
+            <td class="statistics-cell" id="min-humidity-sensor"></td>
+            <td class="statistics-cell" id="min-brightness-sensor"></td>
+          </tr>
+          <tr>
+            <td>Average - week</td>
+            <td class="statistics-cell" id="average-temperature-week"></td>
+            <td class="statistics-cell" id="average-humidity-week"></td>
+            <td class="statistics-cell" id="average-brightness-week"></td>
+          </tr>
+          <tr>
+            <td>Maximum - week</td>
+            <td class="statistics-cell" id="max-temperature-week"></td>
+            <td class="statistics-cell" id="max-humidity-week"></td>
+            <td class="statistics-cell" id="max-brightness-week"></td>
+          </tr>
+          <tr>
+            <td>Minimum - week</td>
+            <td class="statistics-cell" id="min-temperature-week"></td>
+            <td class="statistics-cell" id="min-humidity-week"></td>
+            <td class="statistics-cell" id="min-brightness-week"></td>
+          </tr>
+          <tr>
+            <td>Average - day</td>
+            <td class="statistics-cell" id="average-temperature-day"></td>
+            <td class="statistics-cell" id="average-humidity-day"></td>
+            <td class="statistics-cell" id="average-brightness-day"></td>
+          </tr>
+          <tr>
+            <td>Maximum - day</td>
+            <td class="statistics-cell" id="max-temperature-day"></td>
+            <td class="statistics-cell" id="max-humidity-day"></td>
+            <td class="statistics-cell" id="max-brightness-day"></td>
+          </tr>
+          <tr>
+            <td>Minimum - day</td>
+            <td class="statistics-cell" id="min-temperature-day"></td>
+            <td class="statistics-cell" id="min-humidity-day"></td>
+            <td class="statistics-cell" id="min-brightness-day"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+  <script>
+    const SENSOR_IDS = ["q3bPOMgDza", "Anw2bNFVHb", "rtPGM4n80v", "fFPR9fxgIf", "seZDwgOPZH", "d1ftuVwNyY", "sjLDuO4Lx4", "mFEYsuCfXe", "HyrOWwWXn5", "UeAEMUlYOu"]
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    let data, chart, 
+      sensor = SENSOR_IDS.includes(localStorage.sensor) ? localStorage.sensor : SENSOR_IDS[0],
+      week = [1, 2, 3, 4, 41].includes(+localStorage.week) ? +localStorage.week : 1,
+      day = days.includes(localStorage.day) ? localStorage.day : "Monday";
+
+    const id = id => document.getElementById(id);
+    function select(type, id) {
+      document.getElementsByClassName(type + "-selected")[0].classList.remove(type + "-selected");
+      document.getElementById(id).classList.add(type + "-selected");
+    }
+
+    select("sensor", "sensor-" + sensor);
+    select("week", "week-" + week);
+    select("day", "day-" + (days.indexOf(day) + 1));
+
+    ["sensor", "week", "day"].forEach(value =>
+      [...document.getElementsByClassName(value + "-tab")].forEach((tab) => {
+        tab.onclick = (e) => {
+          select(value, e.target.id);
+
+          switch (value) {
+            case "sensor":
+              sensor = e.target.id.replace("sensor-", "");
+              break;
+            case "week":
+              week = Number(e.target.innerText);
+              break;
+            case "day":
+              day = e.target.innerText;
+              break;
+          }
+
+          localStorage.sensor = sensor
+          localStorage.week = week
+          localStorage.day = day
+
+          if (data) refreshData()
+        };
+      }));
+
+    document.addEventListener("DOMContentLoaded", () => {
+      data = {{ data|safe }};
+
+      Object.keys(data).forEach(sensorId => sensorId);
+
+      refreshData();
+
+      Chart.defaults.global.defaultFontColor = "#ffc800";
+
+      if (!data[sensor] || !data[sensor][week] || !data[sensor][week][day]) {
+        chart = new Chart("graph", {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "temperature",
+              borderColor: "red",
+              data: []
+            },
+            {
+              label: "humidity",
+              borderColor: "blue",
+              data: []
+            },
+            {
+              label: "brightness (x 0.1)",
+              borderColor: "yellow",
+              data: []
+            }
+          ]
+        },
+      })
+        return;
+      }
+
+      const temperatureValues = data[sensor][week][day].map(val => val[4]);
+      const humidityValues = data[sensor][week][day].map(val => val[5]);
+      const brightnessValues = data[sensor][week][day].map(val => val[6]);
+      const hours = data[sensor][week][day].map(val => val[3]);
+
+      chart = new Chart("graph", {
+        type: "line",
+        data: {
+          labels: hours,
+          datasets: [
+            {
+              label: "temperature",
+              borderColor: "red",
+              data: temperatureValues
+            },
+            {
+              label: "humidity",
+              borderColor: "blue",
+              data: humidityValues
+            },
+            {
+              label: "brightness (x 0.1)",
+              borderColor: "yellow",
+              data: brightnessValues.map(l => l / 10)// for display purposes (makes the graph inaccurate for values)
+            }
+          ]
+        },
+      })
+    });
+
+
+    function refreshData() {
+      const historyTable = id("history");
+        historyTable.querySelectorAll("*").forEach(child => child.remove())
+      const statisticsTable = id("statistics");
+
+      if (!data[sensor] || !data[sensor][week] || !data[sensor][week][day]) {
+        statisticsTable.querySelectorAll(".statistics-cell").forEach(child => child.innerText = "")
+
+        if (chart) {
+          chart.data.labels = []
+          chart.data.datasets.forEach((dataset, i) => {
+            dataset.data = [];
+          });
+          chart.update();
+        }
+
+        return;
+      }
+
+      dayData = data[sensor][week][day];
+
+      dayData.forEach(val => {
+        const row = document.createElement("tr");
+
+        val.slice(3).forEach(d => {
+          const cell = document.createElement("td");
+          cell.innerText = d;
+          row.appendChild(cell);
+        })
+
+        historyTable.appendChild(row);
+      });
+
+      const temperatureValues = data[sensor][week][day].map(val => val[4]);
+      const humidityValues = data[sensor][week][day].map(val => val[5]);
+      let brightnessValues = data[sensor][week][day].map(val => val[6]);
+      const hours = data[sensor][week][day].map(val => val[3]);
+      
+      id("average-temperature-day").innerText = Math.round(temperatureValues.map(Number).reduce((a, n) => a + n) / hours.length)
+      id("average-humidity-day").innerText = Math.round(humidityValues.map(Number).reduce((a, n) => a + n) / hours.length)
+      id("average-brightness-day").innerText = Math.round(brightnessValues.map(Number).reduce((a, n) => a + n) / hours.length)
+      
+      id("max-temperature-day").innerText = temperatureValues.map(Number).reduce((a, n) => Math.max(a, n))
+      id("max-humidity-day").innerText = humidityValues.map(Number).reduce((a, n) => Math.max(a, n))
+      id("max-brightness-day").innerText = brightnessValues.map(Number).reduce((a, n) => Math.max(a, n))
+      
+      id("min-temperature-day").innerText = temperatureValues.map(Number).reduce((a, n) => Math.min(a, n))
+      id("min-humidity-day").innerText = humidityValues.map(Number).reduce((a, n) => Math.min(a, n))
+      id("min-brightness-day").innerText = brightnessValues.map(Number).reduce((a, n) => Math.min(a, n))
+
+      let week_temp_val = [];
+      let week_hum_val = [];
+      let week_lux_val = [];
+
+      for (curr_day in data[sensor][week]) {
+        if (!data[sensor][week][curr_day]) continue;
+        
+        week_temp_val = week_temp_val.concat(...data[sensor][week][curr_day].map(val => val[4]));
+        week_hum_val = week_hum_val.concat(...data[sensor][week][curr_day].map(val => val[5]));
+        week_lux_val = week_lux_val.concat(...data[sensor][week][curr_day].map(val => val[6]));
+      }
+      
+      id("average-temperature-week").innerText = Math.round(week_temp_val.map(Number).reduce((a, n) => a + n) / week_temp_val.length)
+      id("average-humidity-week").innerText = Math.round(week_hum_val.map(Number).reduce((a, n) => a + n) / week_hum_val.length)
+      id("average-brightness-week").innerText = Math.round(week_lux_val.map(Number).reduce((a, n) => a + n) / week_lux_val.length)
+
+      id("max-temperature-week").innerText = week_temp_val.map(Number).reduce((a, n) => Math.max(a, n))
+      id("max-humidity-week").innerText = week_hum_val.map(Number).reduce((a, n) => Math.max(a, n))
+      id("max-brightness-week").innerText = week_lux_val.map(Number).reduce((a, n) => Math.max(a, n))
+
+      id("min-temperature-week").innerText = week_temp_val.map(Number).reduce((a, n) => Math.min(a, n))
+      id("min-humidity-week").innerText = week_hum_val.map(Number).reduce((a, n) => Math.min(a, n))
+      id("min-brightness-week").innerText = week_lux_val.map(Number).reduce((a, n) => Math.min(a, n))
+
+      let sensor_temp_val = [];
+      let sensor_hum_val = [];
+      let sensor_lux_val = [];
+
+      for (curr_week in data[sensor]) {
+        for (curr_day in data[sensor][week]) {
+          if (!data[sensor][curr_week][curr_day]) continue;
+          
+          sensor_temp_val = sensor_temp_val.concat(...data[sensor][curr_week][curr_day].map(val => val[4]));
+          sensor_hum_val = sensor_hum_val.concat(...data[sensor][curr_week][curr_day].map(val => val[5]));
+          sensor_lux_val = sensor_lux_val.concat(...data[sensor][curr_week][curr_day].map(val => val[6]));
+        }
+      }
+
+      id("average-temperature-sensor").innerText = Math.round(sensor_temp_val.map(Number).reduce((a, n) => a + n) / sensor_temp_val.length)
+      id("average-humidity-sensor").innerText = Math.round(sensor_hum_val.map(Number).reduce((a, n) => a + n) / sensor_hum_val.length)
+      id("average-brightness-sensor").innerText = Math.round(sensor_lux_val.map(Number).reduce((a, n) => a + n) / sensor_lux_val.length)
+
+      id("max-temperature-sensor").innerText = sensor_temp_val.map(Number).reduce((a, n) => Math.max(a, n))
+      id("max-humidity-sensor").innerText = sensor_hum_val.map(Number).reduce((a, n) => Math.max(a, n))
+      id("max-brightness-sensor").innerText = sensor_lux_val.map(Number).reduce((a, n) => Math.max(a, n))
+
+      id("min-temperature-sensor").innerText = sensor_temp_val.map(Number).reduce((a, n) => Math.min(a, n))
+      id("min-humidity-sensor").innerText = sensor_hum_val.map(Number).reduce((a, n) => Math.min(a, n))
+      id("min-brightness-sensor").innerText = sensor_lux_val.map(Number).reduce((a, n) => Math.min(a, n))
+      
+      if (!chart) return;
+
+      brightnessValues = brightnessValues.map(lux => lux / 10)
+
+      chart.data.labels = hours
+      chart.data.datasets.forEach((dataset, i) => {
+        dataset.data = [temperatureValues, humidityValues, brightnessValues][i];
+      });
+      chart.update();
+    }
+  </script>
+</html>
