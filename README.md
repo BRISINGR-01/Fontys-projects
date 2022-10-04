@@ -1,5 +1,5 @@
 # Fontys-projects
-All the project worthy of showing that I have build during my time as a student at Fontys
+All the project worthy of showing that I have build during my time as a student at [Fontys](https://fontys.edu/Bachelors-masters/Bachelors/Information-Communication-Technology-Eindhoven.htm)
 
 # Greenhouse
 A website for displaying the data for a greenhouse:
