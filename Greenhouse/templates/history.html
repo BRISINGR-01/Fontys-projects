@@ -130,11 +130,11 @@
   </body>
   <script>
     const SENSOR_IDS = ["Arduino", "q3bPOMgDza", "Anw2bNFVHb", "rtPGM4n80v", "fFPR9fxgIf", "seZDwgOPZH", "d1ftuVwNyY", "sjLDuO4Lx4", "mFEYsuCfXe", "HyrOWwWXn5", "UeAEMUlYOu"]
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     let data, chart, 
       sensor = SENSOR_IDS.includes(localStorage.sensor) ? localStorage.sensor : SENSOR_IDS[0],
       week = [0, 1, 2, 3, 4].includes(+localStorage.week) ? +localStorage.week : 1,
-      day = days.includes(localStorage.day) ? localStorage.day : "Monday";
+      day = DAYS.includes(localStorage.day) ? localStorage.day : "Monday";
 
     [...document.getElementsByClassName("arduino")].forEach(curr_week => curr_week.style.display = sensor == SENSOR_IDS[0] ? "block" : "none");
     [...document.getElementsByClassName("non-arduino")].forEach(curr_week => curr_week.style.display = sensor != SENSOR_IDS[0] ? "block" : "none");
@@ -149,7 +149,7 @@
 
     select("sensor", "sensor-" + sensor);
     select("week", "week-" + week);
-    select("day", "day-" + (days.indexOf(day) + 1));
+    select("day", "day-" + (DAYS.indexOf(day) + 1));
 
     ["sensor", "week", "day"].forEach(value =>
       [...document.getElementsByClassName(value + "-tab")].forEach((tab) => {
@@ -165,10 +165,21 @@
                 select("week", "week-0");
                 week = 0
                 let unAvailableDays = Object.entries(data[sensor][week]).filter(([day, val]) => val.length == 0).map(entry => entry[0]);
-                unAvailableDays.forEach(day => id("day-" + (days.indexOf(day) + 1)).style.display = "none");
+                unAvailableDays.forEach(day => id("day-" + (DAYS.indexOf(day) + 1)).style.display = "none");
+                if (unAvailableDays.includes(day)) {
+                  let availableDays = DAYS.filter(d => !unAvailableDays.includes(d));
+                  if (availableDays.length == 0) {
+                    day = DAYS[0];
+                    select("day", "day-1");
+                  } else {
+                    day = availableDays[0];
+                    select("day", "day-" + (DAYS.indexOf(day) + 1));
+                  }
+                }
               } else if (localStorage.sensor == SENSOR_IDS[0]) {
                 select("week", "week-1");
-                days.forEach((day, i) => id("day-" + (i + 1)).style.display = "block");
+                week = 1
+                DAYS.forEach((day, i) => id("day-" + (i + 1)).style.display = "block");
               }
               break;
             case "week":
@@ -192,7 +203,7 @@
 
       if (sensor == SENSOR_IDS[0]) {
         let unAvailableDays = Object.entries(data[sensor][week]).filter(([day, val]) => val.length == 0).map(entry => entry[0]);
-          unAvailableDays.forEach(day => id("day-" + (days.indexOf(day) + 1)).style.display = "none");
+          unAvailableDays.forEach(day => id("day-" + (DAYS.indexOf(day) + 1)).style.display = "none");
       }
 
       Object.keys(data).forEach(sensorId => sensorId);
@@ -226,7 +237,7 @@
         return;
       } else if (data[sensor][week][day].length == 0) {
         day = Object.entries(data[sensor][week]).find(([day, val]) => val.length > 0)[0];
-        select("day", "day-" + (days.indexOf(day) + 1))
+        select("day", "day-" + (DAYS.indexOf(day) + 1))
       }
 
       refreshData();
