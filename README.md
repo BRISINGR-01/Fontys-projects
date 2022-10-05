@@ -5,10 +5,10 @@ All the project worthy of showing that I have build during my time as a student 
 A website for displaying the data for a greenhouse:
 ## Info
   - python backend - Flask framework
-  - jinja/html and js frontend - no framework, Chart.js library
+  - jinja/html and js frontend - Chart.js library
   - Arduino UNO for measuring temperature, humidity and brightness
   - CSV as database
-  - Accurate termometer built with Figma
+  - Accurate SVG termometer built with Figma
 
 ## Set up<br>
   Connect the Arduino Uno, set up the firmata library on the arduino and install the python dependency. (optional)<br> 
