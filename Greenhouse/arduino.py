@@ -1,5 +1,6 @@
 import datetime, sys, requests, time
 from fhict_cb_01.CustomPymata4 import CustomPymata4
+
 DHTPIN = 12
 LDRPIN = 2
 
@@ -8,26 +9,6 @@ ID="4776313"
 humidity_measurement = None
 temperature_measurement = None
 light_measurement = None
-time_stamp = None
-def current_time():
-    def format(num):
-        if (num < 10):
-            return "0" + str(num)
-        else:
-            return num
-
-    now = datetime.datetime.now()
-
-    return f"{format(now.hour)}:{format(now.minute)}:{format(now.second)}"
-
-
-humidity_measurement = 60
-temperature_measurement = 12
-light_measurement = 1000
-today = datetime.datetime.now().strftime("%A")
-week_num = datetime.datetime.now().isocalendar()[1]
-time_stamp = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S") 
-requests.post("http://localhost:5000/post_data", json=[ID, week_num, today, current_time(), temperature_measurement, humidity_measurement, light_measurement])
 
 def measure_DHT(data):
     global humidity_measurement, temperature_measurement
@@ -77,7 +58,6 @@ def get_structured_data():
   time_stamp = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S") 
 
   return [ID, week_num, today, current_time(), temperature_measurement, humidity_measurement, light_measurement]
-  # return [time_stamp, ID, humidity_measurement, temperature_measurement, light_measurement]
 
 while True:
   time.sleep(5)
