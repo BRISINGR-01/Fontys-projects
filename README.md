@@ -11,8 +11,8 @@ A website for displaying the data for a greenhouse:
   - Accurate termometer built with Figma
 
 ## Set up<br>
+  Connect the Arduino Uno, set up the firmata library on the arduino and install the python dependency. (optional)<br> 
   `git clone https://github.com/BRISINGR-01/Fontys-projects.git`<br>
   `cd /Greenhouse`<br>
-  `python create_data.py`<br>
   `python app.py`<br>
   `flask run`
