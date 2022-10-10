@@ -4,7 +4,7 @@ from fhict_cb_01.CustomPymata4 import CustomPymata4
 DHTPIN = 12
 LDRPIN = 2
 
-ID="4776313"
+ID="Arduino"
 
 humidity_measurement = None
 temperature_measurement = None
@@ -34,12 +34,7 @@ try:
 except:
     print("The arduino is not connected")
 
-url = input("Please enter the IP address of the Flask server [localhost] : ")
-if not url:
-   url = "http://localhost:5000/post_data"
-else: 
-    url = url + ":5000/post_data"
-print(f"Connecting to {url}")
+url = "http://localhost:5000"
 
 def get_structured_data():
   def current_time():
@@ -61,4 +56,9 @@ def get_structured_data():
 
 while True:
   time.sleep(5)
-  response = requests.post(url, json=get_structured_data())
+  try:
+    response = requests.post(url + "/post_data", json=get_structured_data())
+    print(response)
+  except requests.ConnectionError:
+    print("Couldn't connect to " + url)
+    

@@ -100,13 +100,12 @@ def create_data():
 
     return data
 
-def create_statistics(data):
+def create_statistics():
     if (not os.path.exists("./data.csv")): create_data()
 
-    if (data == None):
-        with open('data.csv', 'r') as csvData:
-            data = list(csv.reader(csvData))
-            data.pop(0)
+    with open('data.csv', 'r') as csvData:
+        data = list(csv.reader(csvData))
+        data.pop(0)
 
         
 
@@ -155,6 +154,3 @@ def create_statistics(data):
 
     with open('statistics.json', 'w') as stats_file:
         json.dump(statisticsData, stats_file)
-    
-if __name__ == "__main__":
-    create_statistics(create_data())

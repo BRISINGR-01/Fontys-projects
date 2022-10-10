@@ -13,8 +13,7 @@ A website for displaying the data for a greenhouse:
 ## Set up<br>
   Connect the Arduino Uno, set up the firmata library on the arduino and install the python dependency. (optional)<br> 
   <br>
-  `pip install flask requests`<br>
   `git clone https://github.com/BRISINGR-01/Fontys-projects.git`<br>
+  `pip install flask requests`<br>
   `cd /Greenhouse`<br>
-  `python app.py`<br>
   `flask run`
