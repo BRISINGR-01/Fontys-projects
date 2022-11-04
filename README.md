@@ -20,7 +20,8 @@ A website for displaying the data for a greenhouse:
   ```
 
 # Pizzaria
-Semester 1 - group project. My contribution: the backend, `chef-space` (one of the pages) and all pages connected to the authentication - login, profile...
+Semester 1 - group project. <br>
+My contribution: the backend, "chef-space" (one of the pages) and all pages connected to the authentication - login, profile...
 ## Technologies
   - backend - [Flask](https://flask.palletsprojects.com/en/2.2.x/)
   - frontend - [jinja](https://jinja.palletsprojects.com/en/3.1.x/)
