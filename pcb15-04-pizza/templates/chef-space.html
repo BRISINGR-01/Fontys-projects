@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Chef Space</title>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="{{ url_for('static',filename='styles/chef-space.css') }}"
+		/>
+		<link
+			rel="shortcut icon"
+			href="{{ url_for('static', filename='favicon.ico') }}"
+		/>
+	</head>
+	<body>
+		<div id="section-grid">
+			{% for type, name in [('is next', 'Next'), ('making', 'Making'),
+			('waiting', 'Waiting for oven'), ('baking', 'Baking')] %}
+			<div class="section-box">
+				<p class="section-title">{{ name }}</p>
+				<div class="section-body">
+					{% for item in items %} {% if item['state'] == type %}
+					<div class="pizza-card" id="card-{{ item['id'] }}">
+						<div class="pizza-card-to-next">
+							{% if type == 'waiting' %}
+							<span>Click left button of the smart oven</span>
+							{% elif type == 'baking' %} {% if item['bakingTimeLeft'] ==
+							'00.00' %}
+							<span>Click the right button of the smart oven</span>
+							{% else %}
+							<span>Wait for the pizza to finish baking</span>
+							{% endif %} {% else %}
+							<button class="arrow-next" id="{{item['id']}}">
+								<img
+									src="{{url_for('static', filename='arrow-right.svg') }}"
+									alt="arrow-next"
+								/>
+							</button>
+							{% endif %}
+						</div>
+						<img
+							src="{{url_for('static', filename='svgs/' + item['imagePath']) }}"
+							alt="{{ item['name'] + ' image' }}"
+						/>
+						<span> {{ item['name'] }} </span>
+						{% if type == 'baking' %}
+						<div class="baking-container">
+							<div class="baking-progress-container">
+								<div class="baking-progress-value"></div>
+								<div hidden>
+									<p id="time-total">{{item['bakingTimeTotal']}}</p>
+									<p id="time-left">{{item['bakingTimeLeft']}}</p>
+								</div>
+							</div>
+							{% if item['bakingTimeLeft'] == '00.00' %}
+							<span id="baking-time-text">Take out of the oven</span>
+							{% else %}
+							<span id="baking-time-text"
+								>{{ item['bakingTimeLeft'] }} min</span
+							>
+							{% endif %}
+						</div>
+						{% endif %}
+						<span class="id"> #{{ item['id'] }} </span>
+					</div>
+					{% endif %} {% endfor %}
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</body>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+		integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+		crossorigin="anonymous"
+	></script>
+	<script type="text/javascript" charset="utf-8">
+		var socket = io();
+		socket.on("reload", () => window.location.reload());
+		socket.on("update-time", ({ pizzaID, bakingTime, totalTime }) => {
+			if (bakingTime == "00.00") {
+				document
+					.getElementById("card-" + pizzaID)
+					.querySelector("#baking-time-text").innerText =
+					"Take out of the oven";
+					document
+						.getElementById("card-" + pizzaID)
+						.querySelector(".baking-progress-value").style.width = '100%'
+			} else {
+				document
+					.getElementById("card-" + pizzaID)
+					.querySelector("#baking-time-text").innerText = bakingTime + " min";
+				document
+					.getElementById("card-" + pizzaID)
+					.querySelector(".baking-progress-value").style.width = `${
+					100 - (100 * bakingTime) / totalTime
+				}%`;
+			}
+		});
+
+		// when luigi makes the pizza go to next stage
+		[...document.querySelectorAll(".arrow-next")].forEach((btn) => {
+			btn.addEventListener("click", () => {
+				fetch("/cycle-pizza-state-by-luigi", {
+					method: "POST",
+					body: btn.id,
+					headers: { "Content-Type": "application/json; charset=UTF-8" },
+				}); // when the pizza state is changed in the database, reload
+			});
+		});
+
+		document.addEventListener("DOMContentLoaded", () => {
+			[...document.getElementsByClassName("baking-container")].forEach(
+				(container) => {
+					const totalTime = +container.querySelector("#time-total").innerText;
+					const timeLeft = +container.querySelector("#time-left").innerText;
+
+					const bakingIndicator = container.querySelector(
+						".baking-progress-value"
+					);
+					const bakingTimeText = container.querySelector("#baking-time-text");
+
+					if (timeLeft > 0) {
+						bakingTimeText.innerText = timeLeft.toFixed(2) + " min";
+						bakingIndicator.style.width = `${
+							100 - (100 * timeLeft) / totalTime
+						}%`;
+					} else {
+						bakingTimeText.innerText = "Take out of the oven";
+						bakingIndicator.style.width = `100%`;
+						bakingIndicator.style.borderTopRightRadius = `20px`;
+						bakingIndicator.style.borderBottomRightRadius = `20px`;
+					}
+				}
+			);
+		});
+	</script>
+</html>

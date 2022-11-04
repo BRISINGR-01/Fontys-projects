@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu</title>
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="{{ url_for('static',filename='styles/customer_page.css') }}"
+    />
+</head>
+{% extends "base.html" %}
+<body>
+     {% block content %}
+    <div id="container">
+        <div class="column">
+            <div id="menu">
+                {%for (index, name, price, image) in menu%}
+                    <div class="menu-item">
+                        <form action="/add_customer" method="post">
+                            <img src="{{url_for('static', filename='svgs/' + image )}}" alt="{{ image }}" width="50px", height="50%">
+                            <p>{{  name  }}, {{  price  }} €</p>
+                            <button name="add", type="submit" value={{  index  }}>add to order</button>
+                        </form>
+                    </div>
+                {%endfor%}
+            </div>
+        </div>
+        <div class="column">
+            <table>
+                <tr>
+                    <th>#</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Price</th>
+                </tr>
+                {% for (Type, Amount, Price, id) in data %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ Type }}</td>
+                        <td>{{ Amount }}</td>
+                        <td>{{ Price }} €</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div id="total">
+                <form action="/payment_page">
+                    Total price: {{ total_price }} € &nbsp;
+                    <input type="submit" value="Pay" class="btn">
+                </form>
+            </div>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        var socket = io();
+        socket.on('reload', () => window.location.reload());
+    </script>
+    {% endblock %}
+</body>
+</html>

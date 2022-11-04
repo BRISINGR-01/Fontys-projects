@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Admin</title>
+    <link
+			rel="stylesheet"
+			type="text/css"
+			href="{{ url_for('static',filename='styles/log-sign.css') }}"
+		/>
+	</head>
+	{% extends "base.html" %}
+	<body>
+		{% block content %}
+		<div id="container">
+			<form action="/admin" method="post" id="addToMenuForm">
+        <input type="text" name="name" placeholder="Item name">
+        <input type="number" name="price" placeholder="Item price">
+        <input type="url" name="image" placeholder="Item image (url)">
+        <button type="submit">Add to menu</button>
+			</form>
+			<div id="admins">
+				<h1>Admins</h1>
+				<ul>
+					{% for admin in admins %}
+					<li>{{ admin }}</lis>
+					{% endfor %}
+				</ul>
+				<h1>Users</h1>
+				<ul>
+					{% for user in users %}
+					<li>{{ user["name"] }} 
+						{% if user["isAdmin"] %}
+						<span class="admin">
+							Admin
+						</span>
+						{% else %}
+						<a href="/delete-account/{{ user['id'] }}" class="delete">
+							Delete
+						</a>
+						{% endif %}
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		{% endblock %}
+	</body>
+</html>

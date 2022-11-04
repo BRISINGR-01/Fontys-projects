@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tracker page</title>
+</head>
+<h1>Tracker page</h1>
+<hr>
+<style>
+
+h1 {
+    text-align: center;
+}
+
+p {
+    text-align: center;
+}
+
+
+.start {
+  width: 90px;
+  padding: 50px;
+  border: 5px solid rgb(175, 19, 19);
+  margin: 0;
+}
+
+.process1 {
+  width: 90px;
+  padding: 50px;
+  border: 5px solid rgb(9, 156, 65);
+  margin: 0;
+}
+
+.oven {
+  width: 90px;
+  padding: 50px;
+  border: 5px solid rgb(175, 19, 19);
+  margin: 0;
+}
+
+.done {
+  width: 90px;
+  padding: 50px;
+  border: 5px solid rgb(9, 156, 65);
+  margin: 0;
+} 
+.row {
+  width: 100%;
+  height: auto;
+  display: flex;
+}
+
+/* ol.progtrckr {
+    margin: 0;
+    padding: 0;
+    list-style-type none;
+}
+
+ol.progtrckr li {
+    display: inline-block;
+    text-align: center;
+    line-height: 3.5em;
+}
+
+ol.progtrckr[data-progtrckr-steps="2"] li { width: 49%; }
+ol.progtrckr[data-progtrckr-steps="3"] li { width: 33%; }
+ol.progtrckr[data-progtrckr-steps="4"] li { width: 24%; }
+ol.progtrckr[data-progtrckr-steps="5"] li { width: 19%; }
+ol.progtrckr[data-progtrckr-steps="6"] li { width: 16%; }
+ol.progtrckr[data-progtrckr-steps="7"] li { width: 14%; }
+ol.progtrckr[data-progtrckr-steps="8"] li { width: 12%; }
+ol.progtrckr[data-progtrckr-steps="9"] li { width: 11%; }
+
+ol.progtrckr li.progtrckr-done {
+    color: black;
+    border-bottom: 4px solid yellowgreen;
+}
+ol.progtrckr li.progtrckr-todo {
+    color: silver; 
+    border-bottom: 4px solid silver;
+}
+
+ol.progtrckr li:after {
+    content: "\00a0\00a0";
+}
+ol.progtrckr li:before {
+    position: relative;
+    bottom: -2.5em;
+    float: left;
+    left: 50%;
+    line-height: 1em;
+}
+ol.progtrckr li.progtrckr-done:before {
+    content: "\2713";
+    color: white;
+    background-color: yellowgreen;
+    height: 2.2em;
+    width: 2.2em;
+    line-height: 2.2em;
+    border: none;
+    border-radius: 2.2em;
+}
+ol.progtrckr li.progtrckr-todo:before {
+    content: "\039F";
+    color: silver;
+    background-color: white;
+    font-size: 2.2em;
+    bottom: -1.2em;
+} */
+
+</style>
+<body>
+<p>
+    Thank you for your order {{customer_name}}! <br>
+    Your order number is {{ordernumber}} <br>
+    Here you can see the progress of your pizza
+</p>
+
+<!-- Ordered list for tracker stages
+<ol class="progtrckr" data-progtrckr-steps="5">
+  <li class="progtrckr-done">Your order was sent to the pizzaria!</li>
+  <li class="progtrckr-done">Your order is being made!</li>
+  <li class="progtrckr-done">Your order is in the oven</li>
+  <li class="progtrckr-todo">Your order is ready for pick-up!</li>
+</ol> -->
+
+<div class="row">
+  <div class="start">Your order was sent to the pizzaria!</div> 
+  <div class="process1">Your order is being made!</div>
+  <div class="oven">Your order is in the oven!</div>
+  <div class="done">Your order is ready for pick-up!</div>
+</div>
+</body>
+
+
+</html>

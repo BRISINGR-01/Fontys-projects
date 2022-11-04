@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Login</title>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="{{ url_for('static',filename='styles/log-sign.css') }}"
+		/>
+	</head>
+	{% extends "base.html" %}
+	<body>
+		{% block content %}
+		<div id="container">
+			{% with messages = get_flashed_messages() %}
+			<div id="form-container">
+				<h1>Log in</h1>
+				<div>
+					{% if messages %}
+					<span>{{ messages[0] }}</span>
+					{% endif %} {% endwith %}
+					<form method="POST" action="/login">
+						<input
+							type="email"
+							name="email"
+							placeholder="Your Email"
+							autofocus=""
+						/>
+
+						<div>
+							<input
+								type="password"
+								name="password"
+								placeholder="Your Password"
+							/>
+						</div>
+						<input
+							type="hidden"
+							name="next"
+							value="{{ request.args.get('next', '') }}"
+						/>
+						<!-- this hidden field remembers the url, which the user initially tried to access before being redirected to the login page -->
+						<div>
+							<label>
+								<input type="checkbox" name="remember" />
+								Remember me
+							</label>
+						</div>
+						<button type="submit">Login</button>
+					</form>
+					<div id="links">
+						<a id="sign_up" href="{{ url_for('auth.sign_up') }}"> Sign up </a>
+						<a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const sign_up = document.getElementById("sign_up");
+				sign_up.href = sign_up.href + window.location.search; 
+			})
+		</script>
+		{% endblock %}
+	</body>
+</html>

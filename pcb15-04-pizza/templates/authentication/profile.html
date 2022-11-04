@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Profile</title>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="{{ url_for('static',filename='styles/profile.css') }}"
+		/>
+	</head>
+	{% extends "base.html" %} {% block content %}
+	<body>
+		<h1 id="header">Welcome, {{ name }}!</h1>
+		<div id="container">
+			<div id="profile-actions">
+				{% if isAuthenticated %}
+					<h1>Employee pages</h1>
+					<a href="{{ url_for('chef_space') }}">
+						<button class="action-btn">Chef space</button>
+					</a>
+					<a href="{{ url_for('cashier') }}">
+						<button class="action-btn">Cashier</button>
+					</a>
+					<a href="{{ url_for('admin') }}">
+						<button class="action-btn">Admin</button>
+					</a>
+				{% endif %}
+				<h1>Password</h1>
+				{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					<span>{{ messages[0] }}</span>
+				{% endif %} {% endwith %}
+				{% if change_password %}
+					<form action="/change-password" method="post">
+						<div>
+							<input type="password" name="previous_password" placeholder="Previous password">
+							<input type="password" name="new_password" placeholder="New password">
+						</div>
+						<button type="submit">Change</button>
+					</form>
+				{% else %}
+					<a href="{{ url_for('auth.change_password') }}">
+						<button class="action-btn">Change password</button>
+					</a>
+				{% endif %}
+				<a href="{{ url_for('auth.forgot_password') }}">
+					<button class="action-btn">Forgot password?</button>
+				</a>
+				<h1>Other</h1>
+				<a href="{{ url_for('auth.logout') }}">
+					<button class="action-btn">Log out</button>
+				</a>
+				<a href="{{ url_for('auth.delete_account') }}">
+					<button class="action-btn">Delete account</button>
+				</a>
+			</div>
+			<div id="orders-actions">
+				<div id="current-order">
+					<h2>Current order</h2>
+					{% if currentOrder != None %}
+					<span>ID: {{ currentOrder['id'] }}</span>
+						<table>
+							<thead>
+								<tr>
+									<td>Preparing</td>
+									<td>Baking</td>
+									<td>Done</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										{% for item in currentOrder['items'] %}
+											{% if item['state'] == 'is next' or item['state'] == 'making' %}
+												<div class="items">
+													<img
+														src="{{url_for('static', filename='svgs/' + item['image']) }}"
+														alt="{{ item['name'] + ' image' }}"
+													/>
+													<div>
+														<span>{{ item['name'] }} {{ item['price'] }} €</span>
+													</div>
+														<span>{{ item['state'] }}</span>
+														<span>x{{ item['count'] }}</span>
+												</div>
+											{% endif %}
+										{% endfor %}
+									</td>
+									<td>
+										{% for item in currentOrder['items'] %}
+											{% if item['state'] == 'baking' or item['state'] == 'waiting' %}
+												<div class="items">
+													<img
+														src="{{url_for('static', filename='svgs/' + item['image']) }}"
+														alt="{{ item['name'] + ' image' }}"
+													/>
+													<div>
+														<span>{{ item['name'] }} {{ item['price'] }} €</span>
+													</div>
+														<span>{{ item['state'] }}</span>
+														<span>x{{ item['count'] }}</span>
+												</div>
+											{% endif %}
+										{% endfor %}
+									</td>
+									<td>
+										{% for item in currentOrder['items'] %}
+											{% if item['state'] == 'done' %}
+												<div class="items">
+													<img
+														src="{{url_for('static', filename='svgs/' + item['image']) }}"
+														alt="{{ item['name'] + ' image' }}"
+													/>
+													<div>
+														<span>{{ item['name'] }} {{ item['price'] }} €</span>
+													</div>
+														<span>{{ item['state'] }}</span>
+														<span>x{{ item['count'] }}</span>
+												</div>
+											{% endif %}
+										{% endfor %}
+									</td>
+								</tr>
+							</tbody>
+						</table>
+							<span>Total: {{ currentOrder['total'] }} €</span>
+					{% endif %}
+				</div>
+				<div id="prev-orders">
+					<h2>Previous orders</h2>
+					{% if previousOrders|length > 0 %}
+						<table>
+							<thead>
+								<tr>
+									<th></th>
+									<th></th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for order in previousOrders %}
+									<tr>
+										<td>ID:</td>
+										<td>{{ order['id'] }}</td>
+									</tr>
+									{% for item in order['items'] %}
+										<tr>
+											<td>
+												<img
+													src="{{url_for('static', filename='svgs/' + item['image']) }}"
+													alt="{{ item['name'] + ' image' }}"
+												/>
+											</td>
+											<td>{{ item['name'] }} {{ item['price'] }} €</td>
+											<td>x{{ item['count'] }}</td>
+										</tr>
+									{% endfor %}
+									<td>Total:</td>
+									<td>{{ order['total'] }} €</td>
+									<tr>
+										<td><p class="divider"/></td>
+										<td><p class="divider"/></td>
+										<td><p class="divider"/></td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+		<script type="text/javascript" charset="utf-8">
+			var socket = io();
+			socket.on('reload', () => window.location.reload());
+		</script>
+	{% endblock %}
+	</body>
+</html>

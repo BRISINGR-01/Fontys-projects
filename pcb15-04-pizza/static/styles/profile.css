@@ -1,0 +1,101 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	max-width: 100vw;
+}
+
+#container {
+	display: flex;
+	padding: 0 1em;
+	border-radius: 10px;
+	border-top-left-radius: 0;
+	margin: 0 1em;
+	background-color: #f2f2f2;
+	max-width: 100vw;
+}
+
+#profile-actions {
+	width: 25%;
+	display: flex;
+	flex-direction: column;
+	border-radius: 20px;
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+.action-group > h1 {
+	margin: 0;
+	margin-bottom: .5em;
+}
+
+.action-btn {
+	margin-top: .5em;
+	width: 100%;
+	padding: 1em;
+	background: linear-gradient(90deg, rgba(0,255,29, .3) 0%, rgba(255,255,255,.3) 25%, rgba(255,255,255,.3) 75%, rgba(255,0,0,.3) 100%);
+}
+
+.action-btn:hover {
+	cursor: pointer;
+	background: linear-gradient(90deg, rgba(0,255,29, 1) 0%, rgba(255,255,255,1) 25%, rgba(255,255,255,1) 75%, rgba(255,0,0, 1) 100%);
+}
+
+#orders-actions {
+	width: 75%;
+	display: flex;
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+img {
+	width: 3em;
+	height: 3em;
+	padding: .5em 0;
+}
+
+#current-order, #prev-orders {
+	width: 50%;
+	padding: 0 1em;
+	gap: 1em;
+	padding: 0 1em;
+	display: flex;
+	flex-direction: column;
+}
+
+@media (max-aspect-ratio: 1/1) {
+	#orders-actions {
+		flex-direction: column;
+	}
+}
+
+#header {
+	font-size: xx-large;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	padding: 1em;
+	background-color: #f2f2f2;
+	margin: .5em;
+	width: fit-content;
+	margin-bottom: 0;
+}
+
+.divider {
+	width: 100%;
+	height: 1px;
+	background-color: black;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+thead {
+	border-bottom: 2px solid black;
+}
+
+td {
+	width: 33%;
+}

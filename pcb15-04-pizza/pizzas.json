@@ -1,0 +1,52 @@
+{
+  "1": {
+    "name": "Margaritha",
+    "price": 9.50,
+    "imagePath": "1.svg"
+  },
+  "2": {
+    "name" : "Salami",
+    "price": 13.00,
+    "imagePath": "2.svg"
+  },
+  "3":{
+    "name" : "Peperoni",
+    "price": 11.25,
+    "imagePath":"6.svg"
+  },
+  "4": {
+    "name" : "Quattro",
+    "price": 11.00,
+    "imagePath": "3.svg"
+  },
+  "5": {
+    "name" : "Hawaii",
+    "price": 11.50,
+    "imagePath": "4.svg"
+  },
+  "6":{
+    "name" : "Pollo",
+    "price": 12.50,
+    "imagePath":"5.svg"
+  },
+  "7":{
+    "name" : "Cola",
+    "price" : 2.70,
+    "imagePath":"coke.svg"
+  },
+  "8":{
+    "name" : "Fanta",
+    "price" : 2.70,
+    "imagePath": "fanta.svg"
+  },
+  "9":{
+    "name" : "Red Bull",
+    "price" : 3.00,
+    "imagePath" : "redbull.svg"
+  },
+  "10":{
+    "name" : "water",
+    "price" : 1.80,
+    "imagePath" : "water.svg"
+  }
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content="Authentic Italian Pizzeria owned by Maio and Luigi. Best pizza in the world. Online pizza orders.">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+    <link 
+      rel="stylesheet" 
+      type="text/css"
+      href="{{ url_for('static',filename='styles/base.css') }}"/>
+  </head>
+  <body>
+    <section>
+      <div class="header">
+        <div class="header left"></div>
+        <div class="header middle"></div>
+        <div class="header right"></div>  
+      </div>
+    </section>
+    <section>
+      <div class="navbar">
+        <ul>
+          <li><a href="{{ url_for('index') }}">Home</a></li>
+          <li><a href="{{ url_for('profile') }}">Profile</a></li>
+          <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+          <li><a href="{{ url_for('auth.sign_up') }}">Sign Up</a></li>
+          <li><a href="{{ url_for('menu') }}">Order</a></li>
+        </ul>
+      </div>
+        {% block content %} {% endblock %}
+    </section>
+  </body>
+  </html>

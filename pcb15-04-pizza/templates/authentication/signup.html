@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Sign Up</title>
+    <link
+			rel="stylesheet"
+			type="text/css"
+			href="{{ url_for('static',filename='styles/log-sign.css') }}"
+		/>
+  </head>
+  <body>
+    {% extends "base.html" %} {% block content %}
+    <div id="container">
+      <div id="form-container">
+        <h1>Sign up</h1>
+        <div>
+          {% with messages = get_flashed_messages() %} {% if messages %}
+          <div>
+            {{ messages[0] }}. Go to
+            <a href="{{ url_for('auth.login') }}">login page</a>.
+          </div>
+          {% endif %} {% endwith %}
+          <form method="POST" action="/sign-up">
+            <input type="text" name="name" placeholder="Name" autofocus="" />
+            <div>
+              <input type="email" name="email" placeholder="Email" autofocus="" />
+            </div>
+            <input type="password" name="password" placeholder="Password" />
+            <input
+              type="hidden"
+              name="next"
+              value="{{ request.args.get('next', '') }}"
+            />
+            <div>
+              <label>
+                <input type="checkbox" name="remember" />
+                Remember me
+              </label>
+            </div>
+            <button type="submit">Sign Up</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endblock %}
+  </body>
+</html>

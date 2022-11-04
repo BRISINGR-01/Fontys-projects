@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Home</title>
+	</head>
+	{% extends "base.html" %}
+	<body>
+		{% block content %}
+		<div id="container">
+			<img
+				src="{{ url_for('static',filename='Company logo.png') }}"
+				id="logo"
+				alt="logo"
+			/>
+		</div>
+		{% endblock %}
+	</body>
+</html>
