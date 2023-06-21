@@ -1,0 +1,3 @@
+[submodule "Event-Manager-TSH"]
+	path = Event-Manager-TSH
+	url = https://github.com/BRISINGR-01/Event-Manager-TSH.git
