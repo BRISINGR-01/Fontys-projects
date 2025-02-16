@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Pokemon Evolution Analyzer</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+		<style>
+			:root {
+				--retro-bg: #c7e0de;
+				--retro-card: #e8f3f1;
+				--retro-primary: #2d545e;
+				--retro-secondary: #374140;
+				--retro-accent: #e98a15;
+			}
+
+			body {
+				background-color: var(--retro-bg);
+				font-family: "Press Start 2P", cursive;
+			}
+
+			.pokemon-card {
+				background-color: var(--retro-card);
+				border: 3px solid var(--retro-primary);
+				box-shadow: 3px 3px 0 var(--retro-secondary);
+				transition: all 0.3s ease;
+				min-height: 140px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				padding: 0.75rem;
+			}
+
+			.pokemon-card:hover {
+				transform: translate(-2px, -2px);
+				box-shadow: 5px 5px 0 var(--retro-secondary);
+			}
+
+			.search-input {
+				background-color: var(--retro-card);
+				border: 3px solid var(--retro-primary);
+				box-shadow: 3px 3px 0 var(--retro-secondary);
+			}
+
+			.pokemon-sprite {
+				image-rendering: pixelated;
+				width: 64px;
+				height: 64px;
+				margin-bottom: 0.5rem;
+			}
+
+			.pokemon-sprite-placeholder {
+				width: 96px;
+				height: 96px;
+				background-color: var(--retro-secondary);
+				opacity: 0.1;
+				border-radius: 0.5rem;
+			}
+
+			.loading .pokemon-sprite {
+				animation: bounce 0.5s infinite alternate;
+			}
+
+			@keyframes bounce {
+				from {
+					transform: translateY(0);
+				}
+				to {
+					transform: translateY(-5px);
+				}
+			}
+
+			.type-badge {
+				font-size: 0.5rem;
+				padding: 0.25rem 0.5rem;
+				border-radius: 0.25rem;
+				margin: 0.125rem;
+				text-transform: uppercase;
+			}
+
+			/* Type colors (same as pokemon.html) */
+			.type-normal {
+				background-color: #a8a878;
+				color: white;
+			}
+			.type-fire {
+				background-color: #f08030;
+				color: white;
+			}
+			.type-water {
+				background-color: #6890f0;
+				color: white;
+			}
+			.type-grass {
+				background-color: #78c850;
+				color: white;
+			}
+			.type-electric {
+				background-color: #f8d030;
+				color: black;
+			}
+			.type-ice {
+				background-color: #98d8d8;
+				color: black;
+			}
+			.type-fighting {
+				background-color: #c03028;
+				color: white;
+			}
+			.type-poison {
+				background-color: #a040a0;
+				color: white;
+			}
+			.type-ground {
+				background-color: #e0c068;
+				color: black;
+			}
+			.type-flying {
+				background-color: #a890f0;
+				color: white;
+			}
+			.type-psychic {
+				background-color: #f85888;
+				color: white;
+			}
+			.type-bug {
+				background-color: #a8b820;
+				color: white;
+			}
+			.type-rock {
+				background-color: #b8a038;
+				color: white;
+			}
+			.type-ghost {
+				background-color: #705898;
+				color: white;
+			}
+			.type-dragon {
+				background-color: #7038f8;
+				color: white;
+			}
+			.type-dark {
+				background-color: #705848;
+				color: white;
+			}
+			.type-steel {
+				background-color: #b8b8d0;
+				color: black;
+			}
+			.type-fairy {
+				background-color: #ee99ac;
+				color: black;
+			}
+
+			.pokemon-name {
+				font-size: 0.7rem;
+				line-height: 1.2;
+				text-align: center;
+				margin-bottom: 0.5rem;
+			}
+
+			.types-container {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 0.25rem;
+			}
+		</style>
+	</head>
+	<body class="min-h-screen">
+		<div class="container mx-auto px-4 py-8">
+			<!-- Header -->
+			<h1 class="text-3xl mb-8 text-center text-[var(--retro-primary)]">Pokemon Evolution Analyzer</h1>
+
+			<!-- Search Container -->
+			<div class="max-w-xl mx-auto mb-8">
+				<div class="relative">
+					<input
+						type="text"
+						id="pokemonSearch"
+						placeholder="Search Pokemon..."
+						class="search-input w-full px-4 py-3 rounded-lg focus:outline-none"
+					/>
+					<div class="absolute right-3 top-3 text-gray-400">
+						<span id="resultCount" class="text-sm"></span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Pokemon Grid -->
+			<div id="pokemonGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+				{% for pokemon in pokemon_list %}
+				<a
+					href="{{ url_for('pokemon_details', name=pokemon.name) }}"
+					class="pokemon-card"
+					data-pokemon-name="{{ pokemon.name.lower() }}"
+				>
+					{% if pokemon.sprite_data.error %}
+					<div class="pokemon-sprite flex items-center justify-center bg-gray-100">
+						<span class="text-xs text-center text-gray-500">?</span>
+					</div>
+					{% elif pokemon.sprite_data and pokemon.sprite_data.sprites.front_default %}
+					<img
+						src="{{ pokemon.sprite_data.sprites.front_default }}"
+						alt="{{ pokemon.name }}"
+						class="pokemon-sprite"
+						loading="lazy"
+					/>
+					{% else %}
+					<div class="pokemon-sprite flex items-center justify-center bg-gray-100">
+						<span class="text-xs text-center text-gray-500">?</span>
+					</div>
+					{% endif %}
+					<div class="pokemon-name">{{ pokemon.name }}</div>
+					{% if not pokemon.sprite_data.error and pokemon.sprite_data.types %}
+					<div class="types-container">
+						{% for type in pokemon.sprite_data.types %}
+						<span class="type-badge type-{{ type }}">{{ type }}</span>
+						{% endfor %}
+					</div>
+					{% endif %}
+				</a>
+				{% endfor %}
+			</div>
+
+			<!-- No Results Message -->
+			<div id="noResults" class="hidden text-center py-8 text-[var(--retro-secondary)]">
+				No Pokemon found matching your search
+			</div>
+		</div>
+
+		<script>
+			const searchInput = document.getElementById("pokemonSearch");
+			const pokemonCards = document.querySelectorAll(".pokemon-card");
+			const noResults = document.getElementById("noResults");
+			const resultCount = document.getElementById("resultCount");
+
+			function filterPokemon() {
+				const query = searchInput.value.toLowerCase();
+				let visibleCount = 0;
+
+				pokemonCards.forEach((card) => {
+					const pokemonName = card.dataset.pokemonName;
+					if (pokemonName.includes(query)) {
+						card.classList.remove("hidden");
+						visibleCount++;
+						// Load image when card becomes visible
+						const img = card.querySelector("img");
+						if (img && img.dataset.src) {
+							img.src = img.dataset.src;
+							delete img.dataset.src;
+						}
+					} else {
+						card.classList.add("hidden");
+					}
+				});
+
+				if (visibleCount === 0) {
+					noResults.classList.remove("hidden");
+					resultCount.textContent = "No matches";
+				} else {
+					noResults.classList.add("hidden");
+					resultCount.textContent = `${visibleCount} found`;
+				}
+			}
+
+			function debounce(func, wait) {
+				let timeout;
+				return function executedFunction(...args) {
+					const later = () => {
+						clearTimeout(timeout);
+						func(...args);
+					};
+					clearTimeout(timeout);
+					timeout = setTimeout(later, wait);
+				};
+			}
+
+			searchInput.addEventListener("input", debounce(filterPokemon, 100));
+		</script>
+	</body>
+</html>

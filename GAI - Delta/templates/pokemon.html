@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{{ pokemon_name }} - Evolution Analysis</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+		<style>
+			:root {
+				--retro-bg: #c7e0de;
+				--retro-card: #e8f3f1;
+				--retro-primary: #2d545e;
+				--retro-secondary: #374140;
+				--retro-accent: #e98a15;
+				--retro-positive: #1b998b;
+				--retro-negative: #c1292e;
+			}
+
+			body {
+				background-color: var(--retro-bg);
+				font-family: "Press Start 2P", cursive;
+			}
+
+			.retro-card {
+				background-color: var(--retro-card);
+				border: 4px solid var(--retro-primary);
+				box-shadow: 4px 4px 0 var(--retro-secondary);
+			}
+
+			.retro-table th {
+				background-color: var(--retro-primary);
+				color: var(--retro-card);
+			}
+
+			.retro-table tr:nth-child(even) {
+				background-color: #d8e7e5;
+			}
+
+			.retro-positive {
+				color: var(--retro-positive);
+			}
+			.retro-negative {
+				color: var(--retro-negative);
+			}
+
+			.stat-card {
+				border: 3px solid var(--retro-primary);
+				box-shadow: 3px 3px 0 var(--retro-secondary);
+			}
+
+			.evolution-card {
+				background-color: var(--retro-card);
+				border: 3px solid var(--retro-primary);
+				box-shadow: 3px 3px 0 var(--retro-secondary);
+				transition: all 0.3s ease;
+			}
+
+			.pokemon-sprite {
+				image-rendering: pixelated;
+			}
+
+			.sprite-container {
+				position: relative;
+				padding: 1rem;
+				background: rgba(0, 0, 0, 0.05);
+				border-radius: 0.5rem;
+			}
+
+			.sprite-container:hover .back-sprite {
+				opacity: 1;
+			}
+
+			.back-sprite {
+				position: absolute;
+				top: 1rem;
+				left: 1rem;
+				opacity: 0;
+				transition: opacity 0.3s ease;
+			}
+
+			.type-badge {
+				font-size: 0.6rem;
+				padding: 0.25rem 0.5rem;
+				border-radius: 0.25rem;
+				margin: 0.25rem;
+				text-transform: uppercase;
+			}
+
+			.type-normal {
+				background-color: #a8a878;
+				color: white;
+			}
+			.type-fire {
+				background-color: #f08030;
+				color: white;
+			}
+			.type-water {
+				background-color: #6890f0;
+				color: white;
+			}
+			.type-grass {
+				background-color: #78c850;
+				color: white;
+			}
+			.type-electric {
+				background-color: #f8d030;
+				color: black;
+			}
+			.type-ice {
+				background-color: #98d8d8;
+				color: black;
+			}
+			.type-fighting {
+				background-color: #c03028;
+				color: white;
+			}
+			.type-poison {
+				background-color: #a040a0;
+				color: white;
+			}
+			.type-ground {
+				background-color: #e0c068;
+				color: black;
+			}
+			.type-flying {
+				background-color: #a890f0;
+				color: white;
+			}
+			.type-psychic {
+				background-color: #f85888;
+				color: white;
+			}
+			.type-bug {
+				background-color: #a8b820;
+				color: white;
+			}
+			.type-rock {
+				background-color: #b8a038;
+				color: white;
+			}
+			.type-ghost {
+				background-color: #705898;
+				color: white;
+			}
+			.type-dragon {
+				background-color: #7038f8;
+				color: white;
+			}
+			.type-dark {
+				background-color: #705848;
+				color: white;
+			}
+			.type-steel {
+				background-color: #b8b8d0;
+				color: black;
+			}
+			.type-fairy {
+				background-color: #ee99ac;
+				color: black;
+			}
+		</style>
+	</head>
+	<body class="min-h-screen p-4">
+		<div class="container mx-auto max-w-6xl">
+			<!-- Navigation -->
+			<a
+				href="{{ url_for('index') }}"
+				class="inline-flex items-center mb-8 text-[var(--retro-primary)] hover:text-[var(--retro-accent)] transition-colors"
+			>
+				<svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+				</svg>
+				Back
+			</a>
+
+			<!-- Pokemon Header -->
+			<h1 class="text-3xl mb-8 text-center text-[var(--retro-primary)]">{{ pokemon_name }}</h1>
+
+			{% if "message" in changes %}
+			<div class="retro-card p-4 mb-8 text-center">{{ changes.message }}</div>
+			{% else %}
+			<!-- Evolution Analysis -->
+			{% if sprites %}
+			<div class="mb-8">
+				<h2 class="text-xl mb-6 text-[var(--retro-primary)]">Evolution Chain</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+					{% for pokemon, sprite_data in sprites.items() %}
+					<div class="evolution-card p-4 text-center">
+						{% if sprite_data.error %}
+						<div class="sprite-container mb-4">
+							<div class="w-24 h-24 mx-auto bg-gray-100 flex items-center justify-center">
+								<span class="text-sm text-gray-500">?</span>
+							</div>
+						</div>
+						{% else %}
+						<div class="sprite-container mb-4">
+							{% if sprite_data.sprites.front_default %}
+							<img
+								src="{{ sprite_data.sprites.front_default }}"
+								alt="{{ pokemon }} front view"
+								class="pokemon-sprite w-24 h-24 mx-auto"
+							/>
+							{% endif %} {% if sprite_data.sprites.back_default %}
+							<img
+								src="{{ sprite_data.sprites.back_default }}"
+								alt="{{ pokemon }} back view"
+								class="pokemon-sprite back-sprite w-24 h-24"
+							/>
+							{% endif %}
+						</div>
+						{% endif %}
+						<div class="text-lg mb-2 text-[var(--retro-primary)]">{{ pokemon }}</div>
+						{% if not sprite_data.error and sprite_data.types %}
+						<div class="flex flex-wrap justify-center">
+							{% for type in sprite_data.types %}
+							<span class="type-badge type-{{ type }}">{{ type }}</span>
+							{% endfor %}
+						</div>
+						{% endif %} {% if not sprite_data.error and sprite_data.sprites.official %}
+						<img
+							src="{{ sprite_data.sprites.official }}"
+							alt="{{ pokemon }} official artwork"
+							class="w-full mt-4 rounded-lg"
+							loading="lazy"
+						/>
+						{% endif %}
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+			{% endif %} {% for evolution, stats in changes.items() %}
+			<div class="retro-card p-6 mb-8">
+				<h2 class="text-xl mb-6 text-[var(--retro-primary)]">{{ evolution }}</h2>
+
+				<!-- Stats Summary -->
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+					<div class="stat-card bg-[var(--retro-card)] p-4 text-center">
+						<div class="text-xs mb-2 text-[var(--retro-secondary)]">Total Change</div>
+						<div class="text-xl text-[var(--retro-primary)]">{{ stats.total_stat_change|string + " pts" }}</div>
+					</div>
+					<div class="stat-card bg-[var(--retro-card)] p-4 text-center">
+						<div class="text-xs mb-2 text-[var(--retro-secondary)]">Improvement</div>
+						<div class="text-xl text-[var(--retro-primary)]">{{ stats.percent_improvement|string + "%" }}</div>
+					</div>
+					<div class="stat-card bg-[var(--retro-card)] p-4 text-center">
+						<div class="text-xs mb-2 text-[var(--retro-secondary)]">Best Boost</div>
+						<div class="text-xl text-[var(--retro-primary)]">{{ stats.biggest_boost }}</div>
+					</div>
+				</div>
+
+				<!-- Detailed Stats Table -->
+				<div class="overflow-x-auto">
+					<table class="w-full retro-table">
+						<thead>
+							<tr>
+								<th class="px-4 py-2 text-left text-xs">Stat</th>
+								<th class="px-4 py-2 text-left text-xs"></th>
+								<th class="px-4 py-2 text-left text-xs">Change</th>
+								<th class="px-4 py-2 text-left text-xs">Percent</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for stat in stats.stat_changes.keys() %}
+							<tr>
+								<td class="px-4 py-3 text-xs">{{ stat|replace('_', ' ')|title }}</td>
+								<td class="px-4 py-3 text-xs"></td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+									{% set change = stats.stat_changes[stat] %}
+									<span
+										class="{{ 'text-green-600' if change > 0 else 'text-red-600' if change < 0 else 'text-gray-600' }}"
+									>
+										{{ '%+d'|format(change) }}
+									</span>
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+									{% set percent = stats.stat_percentages[stat] %}
+									<span
+										class="{{ 'text-green-600' if percent > 0 else 'text-red-600' if percent < 0 else 'text-gray-600' }}"
+									>
+										{{ '%+.1f%%'|format(percent) }}
+									</span>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% endfor %} {% endif %}
+		</div>
+	</body>
+</html>

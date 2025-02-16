@@ -1,3 +1,6 @@
 [submodule "Event-Manager-TSH"]
-	path = Event-Manager-TSH
-	url = https://github.com/BRISINGR-01/Event-Manager-TSH.git
+  path = Event-Manager-TSH
+  url = https://github.com/BRISINGR-01/Event-Manager-TSH.git
+[submodule "Maths"]
+	path = Maths
+	url = https://github.com/BRISINGR-01/Maths
