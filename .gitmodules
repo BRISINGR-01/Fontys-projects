@@ -4,3 +4,6 @@
 [submodule "Maths"]
 	path = Maths
 	url = https://github.com/BRISINGR-01/Maths
+[submodule "GLOW-2025"]
+	path = hand-drawing-prototype
+	url = https://github.com/GLOW-Delta-2025/hand-drawing-prototype.git
